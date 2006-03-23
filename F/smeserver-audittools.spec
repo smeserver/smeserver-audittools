@@ -2,7 +2,7 @@ Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
 %define version 0.0.1
-%define release 04
+%define release 05
 Version: %{version}
 Release: %{release}
 License: GPL
@@ -10,6 +10,7 @@ Group: System Environment/Base
 Source: %{name}-%{version}.tar.gz
 Patch0: smeserver-audittools-0.0.1-CustomTemplates.patch
 Patch1: smeserver-audittools-0.0.1-TemplateOwners.patch
+Patch2: smeserver-audittools-0.0.1-DisplayCommands.patch
 Packager: Gordon Rowell <gordonr@gormand.com.au>
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
@@ -22,19 +23,24 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Thu Mar 23 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-05
+- Only display commands required for conversion from virtualdomains
+  hacks to user@domain pseudonyms. These are audit tools - changing
+  the system should be a separate task [SME: 762]
+
 * Thu Mar 23 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-04
 - Examine custom templates:
   - Are they owned by an RPM?
   - Are they an override or an addition?
 - Examine templates
   - Are they owned by an RPM?
-  - TODO: Have they been modified since the install?
+  - TODO: Have they been modified since the install? [SME: 762]
 
 * Thu Mar 23 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-03
-- First cut at custom template audit
+- First cut at custom template audit [SME: 762]
 
 * Thu Mar 23 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-02
-- Add dependency on perl(RPM2)
+- Add dependency on perl(RPM2) [SME: 762]
 
 * Thu Mar 23 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-01
 - Initial version [SME: 762]
@@ -43,6 +49,7 @@ modifications prior to upgrades.
 %setup
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 

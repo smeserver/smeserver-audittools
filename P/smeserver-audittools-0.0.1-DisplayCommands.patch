@@ -1,0 +1,13 @@
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audit-virtualdomains2pseudonyms mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-virtualdomains2pseudonyms
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audit-virtualdomains2pseudonyms	2006-03-23 11:09:31.000000000 +1100
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-virtualdomains2pseudonyms	2006-03-23 12:33:17.993711657 +1100
+@@ -43,8 +43,5 @@
+ 	next;
+     }
+ 
+-    warn "Creating $pseudo => $account\n";
+-
+-    $entry = $adb->new_record($pseudo,
+-	{ type => 'pseudonym', Account => $account } );
++    warn "RUN: db accounts set $pseudo pseudonym Account $account\n";
+ }
