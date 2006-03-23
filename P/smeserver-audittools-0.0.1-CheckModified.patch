@@ -1,0 +1,63 @@
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates	2006-03-23 15:17:58.069132687 +1100
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates	2006-03-23 15:16:17.414458072 +1100
+@@ -24,6 +24,7 @@
+ use RPM2;
+ use File::Find;
+ use File::Path;
++use File::stat;
+ 
+ # Files not owned by RPMs
+ # Files modified since install by RPM
+@@ -47,11 +48,11 @@
+     my $template = $File::Find::name;
+     $template =~ s/-custom//;
+ 
+-    print "$File::Find::name: " .
+-        ((-e $template) ? "OVERRIDE" : "ADDITION") . "\n";
++    my $status = rpm_status(name => $File::Find::name, verbose => 1);
++
++    print "$File::Find::name: $status, " .
++        ((-e $template) ? "OVERRIDE" : "ADDITION"), "\n";
+ 
+-    print "$File::Find::name: OWNEDBY " . $_->as_nvre . "\n"
+-	for $rpm2->find_by_file($File::Find::name);
+ }
+ 
+ sub templates
+@@ -60,12 +61,29 @@
+ 
+     my $template = $File::Find::name;
+ 
+-    my @rpms = $rpm2->find_by_file($File::Find::name);
++    my $status = rpm_status(name => $File::Find::name, verbose => 0);
++
++    return if ( $status eq "OK");
++
++    print "$File::Find::name: $status\n";
++}
++
++sub rpm_status
++{
++    my (%options) = @_;
++
++    my @rpms = $rpm2->find_by_file($options{name});
++
++    return "UNOWNED" unless (@rpms);
++
++    return "MULTIPLE_OWNERS " . join(", ", map { $_->as_nvre } @rpms)
++	if (@rpms >= 2);
++
++    my $install_time = $rpms[0]->tag("INSTALLTIME");
++
++    my $st = stat($options{name}) or die "Couldn't stat $options{name}: $!";
+ 
+-    unless (@rpms)
+-    {
+-        print "$File::Find::name: UNOWNED\n";
+-    }
++    return "MODIFIED " . $rpms[0]->as_nvre if ($st->mtime > $install_time);
+ 
+-    # XXX FIXME - Check for modified templates owned by RPMs
++    return "OK";
+ }
