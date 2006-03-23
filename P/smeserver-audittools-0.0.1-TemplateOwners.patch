@@ -1,0 +1,42 @@
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates	2006-03-23 12:20:55.020007130 +1100
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates	2006-03-23 12:20:40.241593870 +1100
+@@ -30,9 +30,14 @@
+ # Templates from "non-standard" RPMs
+ # Templates overridden in templates-custom
+ 
++use RPM2;
++my $rpm2 = RPM2->open_rpm_db();
++
+ for my $dir ( qw(templates templates-user) )
+ {
+     find({ wanted => \&custom_templates }, "/etc/e-smith/$dir-custom");
++
++    find({ wanted => \&templates }, "/etc/e-smith/$dir");
+ }
+ 
+ sub custom_templates
+@@ -44,5 +49,23 @@
+ 
+     print "$File::Find::name: " .
+         ((-e $template) ? "OVERRIDE" : "ADDITION") . "\n";
++
++    print "$File::Find::name: OWNEDBY " . $_->as_nvre . "\n"
++	for $rpm2->find_by_file($File::Find::name);
+ }
+ 
++sub templates
++{
++    return unless -f;
++
++    my $template = $File::Find::name;
++
++    my @rpms = $rpm2->find_by_file($File::Find::name);
++
++    unless (@rpms)
++    {
++        print "$File::Find::name: UNOWNED\n";
++    }
++
++    # XXX FIXME - Check for modified templates owned by RPMs
++}

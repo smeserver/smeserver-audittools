@@ -2,13 +2,14 @@ Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
 %define version 0.0.1
-%define release 03
+%define release 04
 Version: %{version}
 Release: %{release}
 License: GPL
 Group: System Environment/Base
 Source: %{name}-%{version}.tar.gz
 Patch0: smeserver-audittools-0.0.1-CustomTemplates.patch
+Patch1: smeserver-audittools-0.0.1-TemplateOwners.patch
 Packager: Gordon Rowell <gordonr@gormand.com.au>
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
@@ -21,6 +22,14 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Thu Mar 23 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-04
+- Examine custom templates:
+  - Are they owned by an RPM?
+  - Are they an override or an addition?
+- Examine templates
+  - Are they owned by an RPM?
+  - TODO: Have they been modified since the install?
+
 * Thu Mar 23 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-03
 - First cut at custom template audit
 
@@ -33,6 +42,7 @@ modifications prior to upgrades.
 %prep
 %setup
 %patch0 -p1
+%patch1 -p1
 
 %build
 
