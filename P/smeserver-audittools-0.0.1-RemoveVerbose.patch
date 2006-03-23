@@ -1,0 +1,21 @@
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates	2006-03-23 15:23:03.047623075 +1100
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates	2006-03-23 15:22:14.163041198 +1100
+@@ -48,7 +48,7 @@
+     my $template = $File::Find::name;
+     $template =~ s/-custom//;
+ 
+-    my $status = rpm_status(name => $File::Find::name, verbose => 1);
++    my $status = rpm_status(name => $File::Find::name);
+ 
+     print "$File::Find::name: $status, " .
+         ((-e $template) ? "OVERRIDE" : "ADDITION"), "\n";
+@@ -61,7 +61,7 @@
+ 
+     my $template = $File::Find::name;
+ 
+-    my $status = rpm_status(name => $File::Find::name, verbose => 0);
++    my $status = rpm_status(name => $File::Find::name);
+ 
+     return if ( $status eq "OK");
+ 

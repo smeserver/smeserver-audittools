@@ -2,7 +2,7 @@ Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
 %define version 0.0.1
-%define release 06
+%define release 07
 Version: %{version}
 Release: %{release}
 License: GPL
@@ -12,6 +12,7 @@ Patch0: smeserver-audittools-0.0.1-CustomTemplates.patch
 Patch1: smeserver-audittools-0.0.1-TemplateOwners.patch
 Patch2: smeserver-audittools-0.0.1-DisplayCommands.patch
 Patch3: smeserver-audittools-0.0.1-CheckModified.patch
+Patch4: smeserver-audittools-0.0.1-RemoveVerbose.patch
 Packager: Gordon Rowell <gordonr@gormand.com.au>
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
@@ -24,6 +25,9 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Thu Mar 23 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-07
+- Remove verbose option to rpm_status - not used [SME: 762]
+
 * Thu Mar 23 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-06
 - Determine how many RPMs own a template and whether it has been
   modified since the install of the RPM [SME: 762]
@@ -56,6 +60,7 @@ modifications prior to upgrades.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 
