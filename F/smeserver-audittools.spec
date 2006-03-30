@@ -1,21 +1,13 @@
 Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
-%define version 0.0.1
-%define release 10
+%define version 0.0.2
+%define release 01
 Version: %{version}
 Release: %{release}
 License: GPL
 Group: System Environment/Base
 Source: %{name}-%{version}.tar.gz
-Patch0: smeserver-audittools-0.0.1-CustomTemplates.patch
-Patch1: smeserver-audittools-0.0.1-TemplateOwners.patch
-Patch2: smeserver-audittools-0.0.1-DisplayCommands.patch
-Patch3: smeserver-audittools-0.0.1-CheckModified.patch
-Patch4: smeserver-audittools-0.0.1-RemoveVerbose.patch
-Patch5: smeserver-audittools-0.0.1-Users2Domains.patch
-Patch6: P/smeserver-audittools-0.0.1-subdirectory.patch
-Patch7: P/smeserver-audittools-0.0.1-pseudonyms.patch
 Packager: Gordon Rowell <gordonr@gormand.com.au>
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
@@ -28,8 +20,11 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Thu Mar 30 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.2-01
+- Roll new tarball with patches to 0.0.1-10 [SME: 792]
+
 * Thu Mar 30 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-10
-- Add psedonyms audit [SME: 762]
+- Add pseudonyms audit [SME: 762]
 
 * Thu Mar 30 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-09
 - Moved all tools into /sbin/e-smith/audittools to reduce clutter
@@ -69,14 +64,6 @@ modifications prior to upgrades.
 
 %prep
 %setup
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
 
 %build
 
