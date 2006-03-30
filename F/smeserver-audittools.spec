@@ -2,12 +2,16 @@ Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
 %define version 0.0.2
-%define release 01
+%define release 02
 Version: %{version}
 Release: %{release}
 License: GPL
 Group: System Environment/Base
 Source: %{name}-%{version}.tar.gz
+Patch0: smeserver-audittools-0.0.2-pseudonymscommands.patch 
+Patch1: smeserver-audittools-0.0.2-printwarn.patch
+Patch2: smeserver-audittools-0.0.2-pseudonymwithoutdomain.patch 
+Patch3: smeserver-audittools-0.0.2-virtualdomains2pseudonyms.patch
 Packager: Gordon Rowell <gordonr@gormand.com.au>
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
@@ -20,6 +24,12 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Thu Mar 30 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.2-02
+- Fix output from pseudonyms audit [SME: 792]
+- Display commands on stdout and warnings on stderr [SME: 792]
+- Complain about pseudonyms with @, but no domain [SME: 792]
+- Complain if virtualdomains pseudonym doesn't match accounts db [SME: 792]
+
 * Thu Mar 30 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.2-01
 - Roll new tarball with patches to 0.0.1-10 [SME: 792]
 
@@ -64,6 +74,10 @@ modifications prior to upgrades.
 
 %prep
 %setup
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 
