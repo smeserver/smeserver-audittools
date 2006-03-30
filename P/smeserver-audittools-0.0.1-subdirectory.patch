@@ -1,0 +1,698 @@
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audit-aliases mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-aliases
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audit-aliases	2006-03-23 11:09:05.000000000 +1100
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-aliases	1970-01-01 10:00:00.000000000 +1000
+@@ -1,64 +0,0 @@
+-#!/usr/bin/perl -w
+-
+-#----------------------------------------------------------------------
+-# copyright (C) 2006 Gordon Rowell <gordonr@gormand.com.au>
+-#
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License as published by
+-# the Free Software Foundation; either version 2 of the License, or
+-# (at your option) any later version.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+-#----------------------------------------------------------------------
+-
+-use strict;
+-use warnings;
+-
+-use esmith::AccountsDB;
+-
+-my $adb = esmith::AccountsDB->open or die "Couldn't open AccountsDB\n";
+-
+-use constant ALIAS_DIR => "/var/qmail/alias";
+-
+-chdir ALIAS_DIR or die "Couldn't chdir alias directory\n";
+-opendir DIR, '.' or die "Couldn't readdir .\n";
+-
+-for my $file ( readdir(DIR) )
+-{
+-    next unless ($file =~ /^.qmail-/);
+-
+-    my $name = $file;
+-    $name =~ s/.qmail-//;
+-    $name =~ s/-default$//;
+-
+-    my $account = $adb->get($name);
+-
+-    if ($account)
+-    {
+-	print "$file: ACCOUNT: $name - " . $account->prop('type') . "\n";
+-	next;
+-    }
+-
+-    my $template = "/etc/e-smith/templates" . ALIAS_DIR . "/$file";
+-
+-    my $custom_template = "/etc/e-smith/templates-custom" . ALIAS_DIR . "/$file";
+-
+-    if (-e $template or -e $custom_template)
+-    {
+-	print "$file: TEMPLATE exists\n";
+-	next;
+-    }
+-
+-    print "$file: MANUAL - contents:\n";
+-
+-    open FILE, $file;
+-
+-    print <FILE>, "\n";
+-}
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates	2006-03-30 10:04:24.461453693 +1000
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates	1970-01-01 10:00:00.000000000 +1000
+@@ -1,89 +0,0 @@
+-#!/usr/bin/perl -w
+-
+-#----------------------------------------------------------------------
+-# copyright (C) 2006 Gordon Rowell <gordonr@gormand.com.au>
+-#
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License as published by
+-# the Free Software Foundation; either version 2 of the License, or
+-# (at your option) any later version.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+-#----------------------------------------------------------------------
+-
+-use strict;
+-use warnings;
+-
+-use RPM2;
+-use File::Find;
+-use File::Path;
+-use File::stat;
+-
+-# Files not owned by RPMs
+-# Files modified since install by RPM
+-# Templates from "non-standard" RPMs
+-# Templates overridden in templates-custom
+-
+-use RPM2;
+-my $rpm2 = RPM2->open_rpm_db();
+-
+-for my $dir ( qw(templates templates-user) )
+-{
+-    find({ wanted => \&custom_templates }, "/etc/e-smith/$dir-custom");
+-
+-    find({ wanted => \&templates }, "/etc/e-smith/$dir");
+-}
+-
+-sub custom_templates
+-{
+-    return unless -f;
+-
+-    my $template = $File::Find::name;
+-    $template =~ s/-custom//;
+-
+-    my $status = rpm_status(name => $File::Find::name);
+-
+-    print "$File::Find::name: $status, " .
+-        ((-e $template) ? "OVERRIDE" : "ADDITION"), "\n";
+-
+-}
+-
+-sub templates
+-{
+-    return unless -f;
+-
+-    my $template = $File::Find::name;
+-
+-    my $status = rpm_status(name => $File::Find::name);
+-
+-    return if ( $status eq "OK");
+-
+-    print "$File::Find::name: $status\n";
+-}
+-
+-sub rpm_status
+-{
+-    my (%options) = @_;
+-
+-    my @rpms = $rpm2->find_by_file($options{name});
+-
+-    return "UNOWNED" unless (@rpms);
+-
+-    return "MULTIPLE_OWNERS " . join(", ", map { $_->as_nvre } @rpms)
+-	if (@rpms >= 2);
+-
+-    my $install_time = $rpms[0]->tag("INSTALLTIME");
+-
+-    my $st = stat($options{name}) or die "Couldn't stat $options{name}: $!";
+-
+-    return "MODIFIED " . $rpms[0]->as_nvre if ($st->mtime > $install_time);
+-
+-    return "OK";
+-}
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates2expand mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates2expand
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates2expand	2006-03-23 11:09:22.000000000 +1100
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-templates2expand	1970-01-01 10:00:00.000000000 +1000
+@@ -1,48 +0,0 @@
+-#!/usr/bin/perl -w
+-
+-#----------------------------------------------------------------------
+-# copyright (C) 1999-2006 Mitel Networks Corporation
+-# 
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License as published by
+-# the Free Software Foundation; either version 2 of the License, or
+-# (at your option) any later version.
+-# 		
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-# 		
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+-#----------------------------------------------------------------------
+-
+-use strict;
+-use warnings;
+-
+-open (FIND, '-|', 'find /etc/e-smith/events/*/templates2expand -type f')
+-    or die "Couldn't call find\n";
+-
+-my %t2e;
+-my %e2t;
+-
+-while ( <FIND> )
+-{
+-    if ( m:/etc/e-smith/events/(.*)/templates2expand(.*): )
+-    {
+-	push @{$t2e{$2}}, $1;
+-
+-	push @{$e2t{$1}}, $2;
+-    }
+-}
+-
+-for (sort keys %t2e)
+-{
+-    print "$_\n\t" . join("\n\t",  @{$t2e{$_}}) . "\n";
+-}
+-
+-for (sort keys %e2t)
+-{
+-    print "$_\n\t" . join("\n\t",  @{$e2t{$_}}) . "\n";
+-}
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/aliases mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/aliases
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/aliases	1970-01-01 10:00:00.000000000 +1000
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/aliases	2006-03-23 11:09:05.000000000 +1100
+@@ -0,0 +1,64 @@
++#!/usr/bin/perl -w
++
++#----------------------------------------------------------------------
++# copyright (C) 2006 Gordon Rowell <gordonr@gormand.com.au>
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 2 of the License, or
++# (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
++#----------------------------------------------------------------------
++
++use strict;
++use warnings;
++
++use esmith::AccountsDB;
++
++my $adb = esmith::AccountsDB->open or die "Couldn't open AccountsDB\n";
++
++use constant ALIAS_DIR => "/var/qmail/alias";
++
++chdir ALIAS_DIR or die "Couldn't chdir alias directory\n";
++opendir DIR, '.' or die "Couldn't readdir .\n";
++
++for my $file ( readdir(DIR) )
++{
++    next unless ($file =~ /^.qmail-/);
++
++    my $name = $file;
++    $name =~ s/.qmail-//;
++    $name =~ s/-default$//;
++
++    my $account = $adb->get($name);
++
++    if ($account)
++    {
++	print "$file: ACCOUNT: $name - " . $account->prop('type') . "\n";
++	next;
++    }
++
++    my $template = "/etc/e-smith/templates" . ALIAS_DIR . "/$file";
++
++    my $custom_template = "/etc/e-smith/templates-custom" . ALIAS_DIR . "/$file";
++
++    if (-e $template or -e $custom_template)
++    {
++	print "$file: TEMPLATE exists\n";
++	next;
++    }
++
++    print "$file: MANUAL - contents:\n";
++
++    open FILE, $file;
++
++    print <FILE>, "\n";
++}
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/templates mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/templates
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/templates	1970-01-01 10:00:00.000000000 +1000
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/templates	2006-03-23 15:22:14.000000000 +1100
+@@ -0,0 +1,89 @@
++#!/usr/bin/perl -w
++
++#----------------------------------------------------------------------
++# copyright (C) 2006 Gordon Rowell <gordonr@gormand.com.au>
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 2 of the License, or
++# (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
++#----------------------------------------------------------------------
++
++use strict;
++use warnings;
++
++use RPM2;
++use File::Find;
++use File::Path;
++use File::stat;
++
++# Files not owned by RPMs
++# Files modified since install by RPM
++# Templates from "non-standard" RPMs
++# Templates overridden in templates-custom
++
++use RPM2;
++my $rpm2 = RPM2->open_rpm_db();
++
++for my $dir ( qw(templates templates-user) )
++{
++    find({ wanted => \&custom_templates }, "/etc/e-smith/$dir-custom");
++
++    find({ wanted => \&templates }, "/etc/e-smith/$dir");
++}
++
++sub custom_templates
++{
++    return unless -f;
++
++    my $template = $File::Find::name;
++    $template =~ s/-custom//;
++
++    my $status = rpm_status(name => $File::Find::name);
++
++    print "$File::Find::name: $status, " .
++        ((-e $template) ? "OVERRIDE" : "ADDITION"), "\n";
++
++}
++
++sub templates
++{
++    return unless -f;
++
++    my $template = $File::Find::name;
++
++    my $status = rpm_status(name => $File::Find::name);
++
++    return if ( $status eq "OK");
++
++    print "$File::Find::name: $status\n";
++}
++
++sub rpm_status
++{
++    my (%options) = @_;
++
++    my @rpms = $rpm2->find_by_file($options{name});
++
++    return "UNOWNED" unless (@rpms);
++
++    return "MULTIPLE_OWNERS " . join(", ", map { $_->as_nvre } @rpms)
++	if (@rpms >= 2);
++
++    my $install_time = $rpms[0]->tag("INSTALLTIME");
++
++    my $st = stat($options{name}) or die "Couldn't stat $options{name}: $!";
++
++    return "MODIFIED " . $rpms[0]->as_nvre if ($st->mtime > $install_time);
++
++    return "OK";
++}
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/templates2expand mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/templates2expand
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/templates2expand	1970-01-01 10:00:00.000000000 +1000
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/templates2expand	2006-03-23 11:09:22.000000000 +1100
+@@ -0,0 +1,48 @@
++#!/usr/bin/perl -w
++
++#----------------------------------------------------------------------
++# copyright (C) 1999-2006 Mitel Networks Corporation
++# 
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 2 of the License, or
++# (at your option) any later version.
++# 		
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++# 		
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
++#----------------------------------------------------------------------
++
++use strict;
++use warnings;
++
++open (FIND, '-|', 'find /etc/e-smith/events/*/templates2expand -type f')
++    or die "Couldn't call find\n";
++
++my %t2e;
++my %e2t;
++
++while ( <FIND> )
++{
++    if ( m:/etc/e-smith/events/(.*)/templates2expand(.*): )
++    {
++	push @{$t2e{$2}}, $1;
++
++	push @{$e2t{$1}}, $2;
++    }
++}
++
++for (sort keys %t2e)
++{
++    print "$_\n\t" . join("\n\t",  @{$t2e{$_}}) . "\n";
++}
++
++for (sort keys %e2t)
++{
++    print "$_\n\t" . join("\n\t",  @{$e2t{$_}}) . "\n";
++}
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/users2domains mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/users2domains
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/users2domains	1970-01-01 10:00:00.000000000 +1000
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/users2domains	2006-03-23 16:50:20.000000000 +1100
+@@ -0,0 +1,81 @@
++#!/usr/bin/perl -w
++
++#----------------------------------------------------------------------
++# copyright (C) 1999-2005 Mitel Networks Corporation
++# Copyright (C) 2006 Gordon Rowell <gordonr@gormand.com.au>
++# 
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 2 of the License, or
++# (at your option) any later version.
++# 		
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++# 		
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
++#----------------------------------------------------------------------
++use strict;
++
++use esmith::AccountsDB;
++use User::pwent;
++use File::Find;
++use Mail::Header;
++
++use constant VERBOSE => 0;
++
++my %delivered2;
++
++my $adb = esmith::AccountsDB->open;
++
++die "Couldn't open AccountsDB\n" unless $adb;
++
++my @users = ('admin', map { $_->key } $adb->users);
++
++foreach my $user ( @users )
++{
++    my $pwent = getpwnam($user) 
++	or die "Couldn't get password entry for $user\n";
++
++    find({ wanted => \&wanted}, $pwent->dir . "/Maildir");
++}
++
++for my $key (sort keys %delivered2)
++{
++    print "$key: $delivered2{$key}\n";
++}
++
++sub wanted
++{
++    return unless -f;
++ 
++    my $name = $File::Find::name;
++
++    unless ($name =~ /(\d+\.\S+)/)
++    {
++	warn "Unknown filename $name\n" if VERBOSE;
++	return;
++    }
++
++    $name = $1;
++
++    open (FILE, $name) or die "Couldn't open $name\n";
++
++    my $header = new Mail::Header \*FILE;
++
++    unless ($header)
++    {
++	warn "Couldn't create Mail::Header object";
++	next;
++    }
++
++    for ($header->get("Delivered-To"))
++    {
++	chomp;
++	next if /^alias-localdelivery/;
++	$delivered2{lc($_)}++;
++    }
++}
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/virtualdomains2pseudonyms mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/virtualdomains2pseudonyms
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/virtualdomains2pseudonyms	1970-01-01 10:00:00.000000000 +1000
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audittools/virtualdomains2pseudonyms	2006-03-23 12:33:17.000000000 +1100
+@@ -0,0 +1,47 @@
++#!/usr/bin/perl -w
++
++#----------------------------------------------------------------------
++# copyright (C) 2006 Gordon Rowell <gordonr@gormand.com.au>
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 2 of the License, or
++# (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
++#----------------------------------------------------------------------
++
++use strict;
++use warnings;
++
++use esmith::AccountsDB;
++
++my $adb = esmith::AccountsDB->open or die "Couldn't open AccountsDB\n";
++
++use constant VIRTUALDOMAINS => "/var/qmail/control/virtualdomains";
++
++open VIRTUALS, VIRTUALDOMAINS or die "Couldn't open virtualdomains\n";
++
++for ( <VIRTUALS> )
++{
++    next unless (/(.*@.*):(.*)/);
++
++    my ($pseudo, $account) = ($1, $2);
++
++    my $entry = $adb->get($pseudo);
++
++    if ($entry)
++    {
++	warn "$pseudo exists\n";
++	next;
++    }
++
++    warn "RUN: db accounts set $pseudo pseudonym Account $account\n";
++}
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audit-users2domains mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-users2domains
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audit-users2domains	2006-03-30 10:04:24.462453520 +1000
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-users2domains	1970-01-01 10:00:00.000000000 +1000
+@@ -1,81 +0,0 @@
+-#!/usr/bin/perl -w
+-
+-#----------------------------------------------------------------------
+-# copyright (C) 1999-2005 Mitel Networks Corporation
+-# Copyright (C) 2006 Gordon Rowell <gordonr@gormand.com.au>
+-# 
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License as published by
+-# the Free Software Foundation; either version 2 of the License, or
+-# (at your option) any later version.
+-# 		
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-# 		
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+-#----------------------------------------------------------------------
+-use strict;
+-
+-use esmith::AccountsDB;
+-use User::pwent;
+-use File::Find;
+-use Mail::Header;
+-
+-use constant VERBOSE => 0;
+-
+-my %delivered2;
+-
+-my $adb = esmith::AccountsDB->open;
+-
+-die "Couldn't open AccountsDB\n" unless $adb;
+-
+-my @users = ('admin', map { $_->key } $adb->users);
+-
+-foreach my $user ( @users )
+-{
+-    my $pwent = getpwnam($user) 
+-	or die "Couldn't get password entry for $user\n";
+-
+-    find({ wanted => \&wanted}, $pwent->dir . "/Maildir");
+-}
+-
+-for my $key (sort keys %delivered2)
+-{
+-    print "$key: $delivered2{$key}\n";
+-}
+-
+-sub wanted
+-{
+-    return unless -f;
+- 
+-    my $name = $File::Find::name;
+-
+-    unless ($name =~ /(\d+\.\S+)/)
+-    {
+-	warn "Unknown filename $name\n" if VERBOSE;
+-	return;
+-    }
+-
+-    $name = $1;
+-
+-    open (FILE, $name) or die "Couldn't open $name\n";
+-
+-    my $header = new Mail::Header \*FILE;
+-
+-    unless ($header)
+-    {
+-	warn "Couldn't create Mail::Header object";
+-	next;
+-    }
+-
+-    for ($header->get("Delivered-To"))
+-    {
+-	chomp;
+-	next if /^alias-localdelivery/;
+-	$delivered2{lc($_)}++;
+-    }
+-}
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.1/root/sbin/e-smith/audit-virtualdomains2pseudonyms mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-virtualdomains2pseudonyms
+--- smeserver-audittools-0.0.1/root/sbin/e-smith/audit-virtualdomains2pseudonyms	2006-03-30 10:04:24.457454383 +1000
++++ mezzanine_patched_smeserver-audittools-0.0.1/root/sbin/e-smith/audit-virtualdomains2pseudonyms	1970-01-01 10:00:00.000000000 +1000
+@@ -1,47 +0,0 @@
+-#!/usr/bin/perl -w
+-
+-#----------------------------------------------------------------------
+-# copyright (C) 2006 Gordon Rowell <gordonr@gormand.com.au>
+-#
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License as published by
+-# the Free Software Foundation; either version 2 of the License, or
+-# (at your option) any later version.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+-#----------------------------------------------------------------------
+-
+-use strict;
+-use warnings;
+-
+-use esmith::AccountsDB;
+-
+-my $adb = esmith::AccountsDB->open or die "Couldn't open AccountsDB\n";
+-
+-use constant VIRTUALDOMAINS => "/var/qmail/control/virtualdomains";
+-
+-open VIRTUALS, VIRTUALDOMAINS or die "Couldn't open virtualdomains\n";
+-
+-for ( <VIRTUALS> )
+-{
+-    next unless (/(.*@.*):(.*)/);
+-
+-    my ($pseudo, $account) = ($1, $2);
+-
+-    my $entry = $adb->get($pseudo);
+-
+-    if ($entry)
+-    {
+-	warn "$pseudo exists\n";
+-	next;
+-    }
+-
+-    warn "RUN: db accounts set $pseudo pseudonym Account $account\n";
+-}

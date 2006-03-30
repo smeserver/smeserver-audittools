@@ -2,7 +2,7 @@ Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
 %define version 0.0.1
-%define release 08
+%define release 09
 Version: %{version}
 Release: %{release}
 License: GPL
@@ -14,6 +14,7 @@ Patch2: smeserver-audittools-0.0.1-DisplayCommands.patch
 Patch3: smeserver-audittools-0.0.1-CheckModified.patch
 Patch4: smeserver-audittools-0.0.1-RemoveVerbose.patch
 Patch5: smeserver-audittools-0.0.1-Users2Domains.patch
+Patch6: P/smeserver-audittools-0.0.1-subdirectory.patch
 Packager: Gordon Rowell <gordonr@gormand.com.au>
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
@@ -26,6 +27,10 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Thu Mar 30 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-09
+- Moved all tools into /sbin/e-smith/audittools to reduce clutter
+  and make it easier to run all of them [SME: 762]
+
 * Thu Mar 23 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.1-08
 - audit-users2domains - What email address have been used? [SME: 762]
 
@@ -66,6 +71,7 @@ modifications prior to upgrades.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 
@@ -77,6 +83,7 @@ modifications prior to upgrades.
 rm -rf $RPM_BUILD_ROOT
 (cd root ; find . -depth -print | cpio -dump $RPM_BUILD_ROOT)
 /sbin/e-smith/genfilelist $RPM_BUILD_ROOT \
+  --file /sbin/e-smith/audittools/ 'attr(0554,root,root)' \
   > %{name}-%{version}-%{release}-filelist
 
 %clean 
