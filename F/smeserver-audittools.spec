@@ -2,9 +2,10 @@ Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
 %define version 0.0.2
-%define release 03
+%define release 4
 Version: %{version}
-Release: %{release}
+Release: %smerelease %{release}
+Packager: %{_packager}
 License: GPL
 Group: System Environment/Base
 Source: %{name}-%{version}.tar.gz
@@ -13,7 +14,6 @@ Patch1: smeserver-audittools-0.0.2-printwarn.patch
 Patch2: smeserver-audittools-0.0.2-pseudonymwithoutdomain.patch 
 Patch3: smeserver-audittools-0.0.2-virtualdomains2pseudonyms.patch
 Patch4: smeserver-audittools-0.0.2-RenameFlags.patch
-Packager: Gordon Rowell <gordonr@gormand.com.au>
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
 Requires: e-smith-lib
@@ -25,6 +25,10 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Thu Dec 07 2006 Shad L. Lords <slords@mail.com>
+- Update to new release naming.  No functional changes.
+- Make Packager generic
+
 * Wed Apr 12 2006 Gordon Rowell <gordonr@gormand.com.au> 0.0.2-03
 - Change status output for templates audit. In particular 
   OK -> OWNED_BY_RPM. This means that custom templates will appear
