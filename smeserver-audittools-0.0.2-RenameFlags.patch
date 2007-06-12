@@ -1,0 +1,31 @@
+diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.2/root/sbin/e-smith/audittools/templates mezzanine_patched_smeserver-audittools-0.0.2/root/sbin/e-smith/audittools/templates
+--- smeserver-audittools-0.0.2/root/sbin/e-smith/audittools/templates	2006-03-30 10:50:36.000000000 +1000
++++ mezzanine_patched_smeserver-audittools-0.0.2/root/sbin/e-smith/audittools/templates	2006-04-12 10:23:39.630317406 +1000
+@@ -63,7 +63,7 @@
+ 
+     my $status = rpm_status(name => $File::Find::name);
+ 
+-    return if ( $status eq "OK");
++    return if ( $status eq "OWNED_BY_RPM");
+ 
+     print "$File::Find::name: $status\n";
+ }
+@@ -74,9 +74,9 @@
+ 
+     my @rpms = $rpm2->find_by_file($options{name});
+ 
+-    return "UNOWNED" unless (@rpms);
++    return "MANUALLY_ADDED" unless (@rpms);
+ 
+-    return "MULTIPLE_OWNERS " . join(", ", map { $_->as_nvre } @rpms)
++    return "MULTIPLE_RPM_OWNERS " . join(", ", map { $_->as_nvre } @rpms)
+ 	if (@rpms >= 2);
+ 
+     my $install_time = $rpms[0]->tag("INSTALLTIME");
+@@ -85,5 +85,5 @@
+ 
+     return "MODIFIED " . $rpms[0]->as_nvre if ($st->mtime > $install_time);
+ 
+-    return "OK";
++    return "OWNED_BY_RPM";
+ }
