@@ -1,7 +1,7 @@
 diff -Nur -x '*.orig' -x '*.rej' smeserver-audittools-0.0.2/root/sbin/e-smith/audittools/newrpms mezzanine_patched_smeserver-audittools-0.0.2/root/sbin/e-smith/audittools/newrpms
 --- smeserver-audittools-0.0.2/root/sbin/e-smith/audittools/newrpms	1969-12-31 17:00:00.000000000 -0700
 +++ mezzanine_patched_smeserver-audittools-0.0.2/root/sbin/e-smith/audittools/newrpms	2007-06-15 18:56:20.000000000 -0600
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,12 @@
 +#!/bin/bash
 +
 +#List rpms installed from outside the standard yum repositories
