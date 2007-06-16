@@ -2,7 +2,7 @@ Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
 %define version 0.0.2
-%define release 4
+%define release 5
 Version: %{version}
 Release: %{release}%{?dist}
 License: GPL
@@ -13,6 +13,7 @@ Patch1: smeserver-audittools-0.0.2-printwarn.patch
 Patch2: smeserver-audittools-0.0.2-pseudonymwithoutdomain.patch 
 Patch3: smeserver-audittools-0.0.2-virtualdomains2pseudonyms.patch
 Patch4: smeserver-audittools-0.0.2-RenameFlags.patch
+Patch5: smeserver-audittools-0.0.2-newrpms.patch
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
 Requires: e-smith-lib
@@ -24,6 +25,7 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Sat Jun 16 2007 Stephen Noble <support@dungog.net> 0.0.2-5
 * Sun Apr 29 2007 Shad L. Lords <slords@mail.com>
 - Clean up spec so package can be built by koji/plague
 
@@ -92,6 +94,7 @@ modifications prior to upgrades.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 
