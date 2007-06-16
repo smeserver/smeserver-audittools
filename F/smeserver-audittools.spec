@@ -26,6 +26,8 @@ modifications prior to upgrades.
 
 %changelog
 * Sat Jun 16 2007 Stephen Noble <support@dungog.net> 0.0.2-5
+- New tool newrpms, lists installed rpms not in standard repos [SME: 1206]
+
 * Sun Apr 29 2007 Shad L. Lords <slords@mail.com>
 - Clean up spec so package can be built by koji/plague
 
