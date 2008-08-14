@@ -62,3 +62,8 @@ Wed Jan  9 11:54:29 2008                       Stephen Noble (stephen)
 
 See changelog
 ----------------------------------------------------------------------
+Thu Aug 14 23:03:15 2008                                    smebuilder
+
+* Wed Aug 14 2008 Jonathan Martens <smeserver-contribs@snetram.nl> 0.0.2-7
+- New tool repositories, lists status of configured repositories [SME: 4438]
+----------------------------------------------------------------------
