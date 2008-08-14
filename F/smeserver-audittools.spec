@@ -27,7 +27,7 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
-* Wed Aug 14 2008 Jonathan Martens <smeserver-contribs@snetram.nl> 0.0.2-7
+* Thu Aug 14 2008 Jonathan Martens <smeserver-contribs@snetram.nl> 0.0.2-7
 - New tool repositories, lists status of configured repositories [SME: 4438]
 
 * Wed Jan 09 2008 Stephen Noble <support@dungog.net> 0.0.2-6
