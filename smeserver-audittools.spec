@@ -1,4 +1,4 @@
-# $Id: smeserver-audittools.spec,v 1.5 2008/10/07 15:47:39 slords Exp $
+# $Id: smeserver-audittools.spec,v 1.6 2008/10/07 15:50:45 slords Exp $
 
 Summary: SME Server auditing tools
 %define name smeserver-audittools
@@ -10,14 +10,6 @@ Release: %{release}%{?dist}
 License: GPL
 Group: System Environment/Base
 Source: %{name}-%{version}.tar.gz
-Patch0: smeserver-audittools-0.0.2-pseudonymscommands.patch 
-Patch1: smeserver-audittools-0.0.2-printwarn.patch
-Patch2: smeserver-audittools-0.0.2-pseudonymwithoutdomain.patch 
-Patch3: smeserver-audittools-0.0.2-virtualdomains2pseudonyms.patch
-Patch4: smeserver-audittools-0.0.2-RenameFlags.patch
-Patch5: smeserver-audittools-0.0.2-newrpms.patch
-Patch6: smeserver-audittools-0.0.2-events.patch
-Patch7: smeserver-audittools-0.0.2-repositories.patch
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
 Requires: e-smith-lib
