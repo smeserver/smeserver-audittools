@@ -1,21 +1,15 @@
+# $Id: smeserver-audittools.spec,v 1.5 2008/10/07 15:47:39 slords Exp $
+
 Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
-%define version 0.0.2
-%define release 7
+%define version 1.0.0
+%define release 1
 Version: %{version}
 Release: %{release}%{?dist}
 License: GPL
 Group: System Environment/Base
 Source: %{name}-%{version}.tar.gz
-Patch0: smeserver-audittools-0.0.2-pseudonymscommands.patch 
-Patch1: smeserver-audittools-0.0.2-printwarn.patch
-Patch2: smeserver-audittools-0.0.2-pseudonymwithoutdomain.patch 
-Patch3: smeserver-audittools-0.0.2-virtualdomains2pseudonyms.patch
-Patch4: smeserver-audittools-0.0.2-RenameFlags.patch
-Patch5: smeserver-audittools-0.0.2-newrpms.patch
-Patch6: smeserver-audittools-0.0.2-events.patch
-Patch7: smeserver-audittools-0.0.2-repositories.patch
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
 Requires: e-smith-lib
@@ -27,6 +21,9 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Tue Oct 7 2008 Shad L. Lords <slords@mail.com> 1.0.0-1.sme
+- Roll new stream to separate sme7/sme8 trees [SME: 4633]
+
 * Thu Aug 14 2008 Jonathan Martens <smeserver-contribs@snetram.nl> 0.0.2-7
 - New tool repositories, lists status of configured repositories [SME: 4438]
 
@@ -99,14 +96,6 @@ modifications prior to upgrades.
 
 %prep
 %setup
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
 
 %build
 
