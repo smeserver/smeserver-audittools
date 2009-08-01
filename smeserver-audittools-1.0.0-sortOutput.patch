@@ -1,0 +1,10 @@
+diff -up smeserver-audittools-1.0.0/root/sbin/e-smith/audittools/repositories.sortOutput smeserver-audittools-1.0.0/root/sbin/e-smith/audittools/repositories
+--- smeserver-audittools-1.0.0/root/sbin/e-smith/audittools/repositories.sortOutput	2008-10-07 17:44:34.000000000 +0200
++++ smeserver-audittools-1.0.0/root/sbin/e-smith/audittools/repositories	2009-08-01 12:43:24.000000000 +0200
+@@ -2,5 +2,5 @@
+ 
+ #List status of configured repositories
+ 
+-/sbin/e-smith/db yum_repositories print | sed 's/=.*|status|/: /;s/|.*//'
++/sbin/e-smith/db yum_repositories print | sed 's/=.*|status|/: /;s/|.*//' | sort
+ 
