@@ -1,15 +1,16 @@
-# $Id: smeserver-audittools.spec,v 1.6 2008/10/07 15:50:45 slords Exp $
+# $Id: smeserver-audittools.spec,v 1.7 2009/08/01 10:49:36 snetram Exp $
 
 Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
 %define version 1.2.0
-%define release 1
+%define release 2
 Version: %{version}
 Release: %{release}%{?dist}
 License: GPL
 Group: System Environment/Base
 Source: %{name}-%{version}.tar.gz
+Patch0: smeserver-audittools-1.2.0-sortOutput.patch
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
 Requires: e-smith-lib
@@ -21,6 +22,9 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Sat Aug 1 2009 Jonathan Martens <smeserver-contribs@snetram.nl> 1.2.0-2.sme
+- Sort the output of the repositories audittool alphabetically [SME: 5417]
+
 * Tue Oct 7 2008 Shad L. Lords <slords@mail.com> 1.2.0-1.sme
 - Roll new stream to separate sme7/sme8 trees [SME: 4633]
 
@@ -96,6 +100,7 @@ modifications prior to upgrades.
 
 %prep
 %setup
+%patch0 -p1
 
 %build
 
