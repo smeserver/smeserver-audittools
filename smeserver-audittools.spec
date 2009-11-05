@@ -1,15 +1,16 @@
-# $Id: smeserver-audittools.spec,v 1.8 2009/10/24 18:49:39 snetram Exp $
+# $Id: smeserver-audittools.spec,v 1.9 2009/11/05 15:56:47 snetram Exp $
 
 Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
 %define version 1.2.0
-%define release 3
+%define release 4
 Version: %{version}
 Release: %{release}%{?dist}
 License: GPL
 Group: System Environment/Base
 Source: %{name}-%{version}.tar.gz
+Patch0: smeserver-audittools-1.2.0-fix-yum-invocation.patch
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
 Requires: e-smith-lib
@@ -21,6 +22,9 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Thu Nov 5 2009 Jonathan Martens <smeserver-contribs@snetram.nl> 1.2.0-4.sme
+- Remove the leading path for yum in newrpms [SME: 5562]
+
 * Sat Oct 24 2009 Jonathan Martens <smeserver-contribs@snetram.nl> 1.2.0-3.sme
 - Revert changes made in [SME: 5417]
 
@@ -102,6 +106,7 @@ modifications prior to upgrades.
 
 %prep
 %setup
+%patch0 -p1
 
 %build
 
