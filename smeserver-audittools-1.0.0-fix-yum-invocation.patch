@@ -1,0 +1,12 @@
+diff -up smeserver-audittools-1.2.0/root/sbin/e-smith/audittools/newrpms.fix-yum-invocation smeserver-audittools-1.2.0/root/sbin/e-smith/audittools/newrpms
+--- smeserver-audittools-1.2.0/root/sbin/e-smith/audittools/newrpms.fix-yum-invocation	2008-10-07 17:46:19.000000000 +0200
++++ smeserver-audittools-1.2.0/root/sbin/e-smith/audittools/newrpms	2009-11-05 16:53:28.000000000 +0100
+@@ -2,7 +2,7 @@
+ 
+ #List rpms installed from outside the standard yum repositories
+ 
+-/sbin/e-smith/yum list extras \
++yum list extras \
+ --disablerepo=* \
+ --enablerepo=base \
+ --enablerepo=smeupdates \
