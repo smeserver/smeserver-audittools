@@ -1,0 +1,19 @@
+diff -up smeserver-audittools-1.0.0/root/sbin/e-smith/audittools/aliases.fixprint smeserver-audittools-1.0.0/root/sbin/e-smith/audittools/aliases
+--- smeserver-audittools-1.0.0/root/sbin/e-smith/audittools/aliases.fixprint	2006-03-30 02:50:36.000000000 +0200
++++ smeserver-audittools-1.0.0/root/sbin/e-smith/audittools/aliases	2009-11-06 14:25:11.000000000 +0100
+@@ -60,5 +60,14 @@ for my $file ( readdir(DIR) )
+ 
+     open FILE, $file;
+ 
+-    print <FILE>, "\n";
++    my @lines = <FILE>;
++
++    foreach (@lines) {
++
++      print $_ unless $_ =~ /^#/;
++
++    }
++
++    print "\n";
++
+ }
