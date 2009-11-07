@@ -1,0 +1,11 @@
+diff -up smeserver-audittools-1.2.0/root/sbin/e-smith/audittools/aliases.fix-dotted-usernames-and-groups smeserver-audittools-1.2.0/root/sbin/e-smith/audittools/aliases
+--- smeserver-audittools-1.2.0/root/sbin/e-smith/audittools/aliases.fix-dotted-usernames-and-groups	2006-03-30 02:50:36.000000000 +0200
++++ smeserver-audittools-1.2.0/root/sbin/e-smith/audittools/aliases	2009-11-07 18:55:42.000000000 +0100
+@@ -37,6 +37,7 @@ for my $file ( readdir(DIR) )
+     my $name = $file;
+     $name =~ s/.qmail-//;
+     $name =~ s/-default$//;
++    $name =~ s/.//;
+ 
+     my $account = $adb->get($name);
+ 
