@@ -1,10 +1,10 @@
-# $Id: smeserver-audittools.spec,v 1.11 2009/11/07 18:01:35 snetram Exp $
+# $Id: smeserver-audittools.spec,v 1.12 2009/11/07 18:53:56 snetram Exp $
 
 Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
 %define version 1.0.0
-%define release 6
+%define release 7
 Version: %{version}
 Release: %{release}%{?dist}
 License: GPL
@@ -23,6 +23,9 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Sat Nov 7 2009 Jonathan Martens <smeserver-contribs@snetram.nl> 1.0.0-7.sme
+- Fix regular expression to actually replace the colon with a dot [SME: 4913]
+
 * Sat Nov 7 2009 Jonathan Martens <smeserver-contribs@snetram.nl> 1.0.0-6.sme
 - Undo changes made in 1.0.0-5 [SME: 4913]
 - Properly fix output for usernames and groups containing a dot [SME: 4913]

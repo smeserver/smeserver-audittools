@@ -5,7 +5,7 @@ diff -up smeserver-audittools-1.2.0/root/sbin/e-smith/audittools/aliases.fix-dot
      my $name = $file;
      $name =~ s/.qmail-//;
      $name =~ s/-default$//;
-+    $name =~ s/.//;
++    $name =~ s/:/./g;
  
      my $account = $adb->get($name);
  
