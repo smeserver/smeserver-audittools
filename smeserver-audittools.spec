@@ -1,17 +1,17 @@
-# $Id: smeserver-audittools.spec,v 1.10 2009/11/06 13:30:53 snetram Exp $
+# $Id: smeserver-audittools.spec,v 1.11 2009/11/07 18:00:11 snetram Exp $
 
 Summary: SME Server auditing tools
 %define name smeserver-audittools
 Name: %{name}
 %define version 1.2.0
-%define release 5
+%define release 6
 Version: %{version}
 Release: %{release}%{?dist}
 License: GPL
 Group: System Environment/Base
 Source: %{name}-%{version}.tar.gz
 Patch0: smeserver-audittools-1.2.0-fix-yum-invocation.patch
-Patch1: smeserver-audittools-1.2.0-fixprint.patch
+Patch1: smeserver-audittools-1.2.0-fix-dotted-usernames-and-groups.patch
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildArchitectures: noarch
 Requires: e-smith-lib
@@ -23,6 +23,10 @@ Tools for consistency audits of SME Servers. Useful for determining local
 modifications prior to upgrades.
 
 %changelog
+* Sat Nov 7 2009 Jonathan Martens <smeserver-contribs@snetram.nl> 1.2.0-6.sme
+- Undo changes made in 1.2.0-5 [SME: 5572]
+- Properly fix output for usernames and groups containing a dot [SME: 5572]
+
 * Fri Nov 6 2009 Jonathan Martens <smeserver-contribs@snetram.nl> 1.2.0-5.sme
 - Remove comment lines from output of aliases [SME: 5572]
 
