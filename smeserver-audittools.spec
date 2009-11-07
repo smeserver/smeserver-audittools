@@ -1,4 +1,4 @@
-# $Id: smeserver-audittools.spec,v 1.10 2009/11/07 17:59:53 snetram Exp $
+# $Id: smeserver-audittools.spec,v 1.11 2009/11/07 18:01:35 snetram Exp $
 
 Summary: SME Server auditing tools
 %define name smeserver-audittools
@@ -24,8 +24,8 @@ modifications prior to upgrades.
 
 %changelog
 * Sat Nov 7 2009 Jonathan Martens <smeserver-contribs@snetram.nl> 1.0.0-6.sme
-- Undo changes made in 1.0.0-5 [SME: 5572]
-- Properly fix output for usernames and groups containing a dot [SME: 5572]
+- Undo changes made in 1.0.0-5 [SME: 4913]
+- Properly fix output for usernames and groups containing a dot [SME: 4913]
 
 * Fri Nov 6 2009 Jonathan Martens <smeserver-contribs@snetram.nl> 1.0.0-5.sme
 - Remove comment lines from output of aliases [SME: 4913]
